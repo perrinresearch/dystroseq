@@ -1,12 +1,14 @@
 import argparse
 import os
+import sys
 from typing import Optional
 
 from .ensembl_client import EnsemblClient
 from .seq_utils import (
 	to_rna, translate_dna_cds, pick_transcript, transcript_exons_in_order, 
 	build_cdna_exon_ranges, exon_protein_segments, parse_variant_notation,
-	get_variant_affected_exons, extract_variant_sequence, create_variant_report
+	get_variant_affected_exons, extract_variant_sequence, create_variant_report,
+	generate_variant_protein_sequence
 )
 
 
@@ -67,6 +69,19 @@ def main() -> None:
 
 	# Per-exon mapping
 	exons_ordered = transcript_exons_in_order(tr)
+	
+	# Add exon rank information to preserve original exon numbering
+	# The original exons list from Ensembl is in the correct order
+	original_exons = tr.get("Exon", [])
+	for i, exon in enumerate(exons_ordered):
+		# Find the original index of this exon in the Ensembl data
+		original_index = None
+		for j, orig_exon in enumerate(original_exons):
+			if orig_exon["start"] == exon["start"] and orig_exon["end"] == exon["end"]:
+				original_index = j + 1  # Convert to 1-based
+				break
+		exon["rank"] = original_index if original_index else i + 1
+	
 	exon_cdna_ranges = build_cdna_exon_ranges(exons_ordered)
 	protein_segments = exon_protein_segments(cdna_seq, cds_seq, exon_cdna_ranges, protein_seq)
 
@@ -132,7 +147,7 @@ def main() -> None:
 					affected_protein_segments.append(protein_segments[exon_num - 1])
 			
 			# Create variant report
-			variant_report = create_variant_report(variant, affected_exons, variant_seq, affected_protein_segments)
+			variant_report = create_variant_report(variant, affected_exons, variant_seq, affected_protein_segments, exons_ordered)
 			write_text(os.path.join(args.out, "variant_report.txt"), variant_report)
 			
 			# Write variant sequence to FASTA
@@ -140,11 +155,19 @@ def main() -> None:
 					   f"{variant.variant_type}_{variant.chrom}_{variant.start}_{variant.end}", 
 					   variant_seq)
 			
-			print(f"Variant analysis complete. Check {args.out}/variant_report.txt and {args.out}/variant_sequence.fasta")
+			# Generate variant protein sequence
+			variant_protein_seq = generate_variant_protein_sequence(variant, protein_segments, affected_exons, exons_ordered)
+			
+			# Write variant protein sequence to FASTA
+			write_fasta(os.path.join(args.out, "variant_protein.fasta"), 
+					   f"{variant.variant_type}_{variant.chrom}_{variant.start}_{variant.end}_protein", 
+					   variant_protein_seq)
+			
+			print(f"Variant analysis complete. Check {args.out}/variant_report.txt, {args.out}/variant_sequence.fasta, and {args.out}/variant_protein.fasta")
 			
 		except Exception as e:
 			print(f"Error processing variant: {e}")
-			# Continue with normal processing even if variant fails
+			sys.exit(1)  # Exit with error code for variant processing failures
 
 
 if __name__ == "__main__":
