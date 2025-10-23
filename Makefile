@@ -1,4 +1,4 @@
-# Makefile for dystroSeq testing and development
+# Makefile for exonSeq testing and development
 
 .PHONY: help install test test-unit test-integration test-coverage lint clean
 

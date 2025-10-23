@@ -1,4 +1,4 @@
-# dystroSeq
+# exonSeq
 
 A small CLI to fetch DNA, RNA (cDNA), and translated protein sequences for a gene/transcript from Ensembl, and export per-exon mappings.
 
@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 ### Basic gene analysis
 ```bash
-python -m dystroseq \
+python -m exonseq \
   --species homo_sapiens \
   --gene DMD \
   --reference GRCh38 \
@@ -24,7 +24,7 @@ python -m dystroseq \
 
 ### With variant analysis (GRCh38/hg38)
 ```bash
-python -m dystroseq \
+python -m exonseq \
   --species homo_sapiens \
   --gene DMD \
   --reference GRCh38 \
@@ -34,7 +34,7 @@ python -m dystroseq \
 
 ### With variant analysis (GRCh37/hg19)
 ```bash
-python -m dystroseq \
+python -m exonseq \
   --species homo_sapiens \
   --gene DMD \
   --reference GRCh37 \

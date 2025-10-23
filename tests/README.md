@@ -1,6 +1,6 @@
-# dystroSeq Test Suite
+# exonSeq Test Suite
 
-This directory contains comprehensive unit tests and integration tests for the dystroSeq bioinformatics tool.
+This directory contains comprehensive unit tests and integration tests for the exonSeq bioinformatics tool.
 
 ## Test Structure
 
