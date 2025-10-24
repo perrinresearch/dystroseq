@@ -1,8 +1,8 @@
-"""Unit tests for dystroseq.ensembl_client module."""
+"""Unit tests for exonseq.ensembl_client module."""
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from dystroseq.ensembl_client import EnsemblClient
+from exonseq.ensembl_client import EnsemblClient
 
 
 class TestEnsemblClient:
@@ -13,7 +13,7 @@ class TestEnsemblClient:
         """Create a test client instance."""
         return EnsemblClient(base_url="https://test.ensembl.org", timeout_s=5, max_retries=2)
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_lookup_gene_by_symbol_success(self, mock_request, client):
         """Test successful gene lookup by symbol."""
         # Mock successful response
@@ -38,7 +38,7 @@ class TestEnsemblClient:
         assert "homo_sapiens/DMD" in call_args[0][1]  # URL is the second positional argument
         assert call_args[1]["params"]["expand"] == 1
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_lookup_gene_by_symbol_not_found(self, mock_request, client):
         """Test gene lookup when gene is not found."""
         # Mock 404 response
@@ -50,7 +50,7 @@ class TestEnsemblClient:
         with pytest.raises(RuntimeError, match="Ensembl API error 404"):
             client.lookup_gene_by_symbol("homo_sapiens", "INVALID")
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_sequence_region_success(self, mock_request, client):
         """Test successful sequence region retrieval."""
         # Mock successful response
@@ -64,7 +64,7 @@ class TestEnsemblClient:
         assert result == "ATCGATCGATCG"
         mock_request.assert_called_once()
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_sequence_region_json_response(self, mock_request, client):
         """Test sequence region with JSON response."""
         # Mock JSON response (some APIs return JSON instead of plain text)
@@ -78,7 +78,7 @@ class TestEnsemblClient:
         
         assert result == "ATCGATCGATCG"
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_sequence_id_success(self, mock_request, client):
         """Test successful sequence ID retrieval."""
         # Mock successful response
@@ -97,7 +97,7 @@ class TestEnsemblClient:
         assert "ENST00000357033" in call_args[0][1]  # URL is the second positional argument
         assert call_args[1]["params"]["type"] == "cdna"
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_retry_on_rate_limit(self, mock_request, client):
         """Test retry mechanism on rate limiting."""
         # Mock rate limit response followed by success
@@ -116,7 +116,7 @@ class TestEnsemblClient:
         assert result["id"] == "test"
         assert mock_request.call_count == 2
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_max_retries_exceeded(self, mock_request, client):
         """Test behavior when max retries are exceeded."""
         # Mock rate limit response
@@ -132,7 +132,7 @@ class TestEnsemblClient:
         # Should have tried max_retries times (client has max_retries=2)
         assert mock_request.call_count == client.max_retries
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_gene_transcripts(self, mock_request, client):
         """Test gene transcripts retrieval."""
         # Mock successful response with transcripts
@@ -152,7 +152,7 @@ class TestEnsemblClient:
         assert result[0]["id"] == "ENST00000357033"
         assert result[1]["id"] == "ENST00000470390"
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_lookup_id_with_expand(self, mock_request, client):
         """Test lookup ID with expand parameter."""
         mock_response = Mock()
@@ -167,7 +167,7 @@ class TestEnsemblClient:
         call_args = mock_request.call_args
         assert call_args[1]["params"]["expand"] == 1
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_lookup_id_without_expand(self, mock_request, client):
         """Test lookup ID without expand parameter."""
         mock_response = Mock()
@@ -200,7 +200,7 @@ class TestEnsemblClient:
         assert default_client.timeout_s == 30
         assert default_client.max_retries == 5
     
-    @patch('dystroseq.ensembl_client.requests.Session.request')
+    @patch('exonseq.ensembl_client.requests.Session.request')
     def test_sequence_region_with_coord_system_version(self, mock_request, client):
         """Test sequence region with coordinate system version."""
         mock_response = Mock()

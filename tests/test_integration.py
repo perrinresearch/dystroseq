@@ -1,4 +1,4 @@
-"""Integration tests for dystroSeq CLI functionality."""
+"""Integration tests for exonSeq CLI functionality."""
 
 import pytest
 import os
@@ -13,7 +13,7 @@ class TestCLIIntegration:
     def test_basic_gene_export(self, temp_dir):
         """Test basic gene export without variants."""
         cmd = [
-            "python", "-m", "dystroseq",
+            "python", "-m", "exonseq", "export",
             "--species", "homo_sapiens",
             "--gene", "DMD",
             "--out", temp_dir
@@ -40,7 +40,7 @@ class TestCLIIntegration:
     def test_variant_analysis_deletion(self, temp_dir):
         """Test variant analysis with deletion."""
         cmd = [
-            "python", "-m", "dystroseq",
+            "python", "-m", "exonseq", "export",
             "--species", "homo_sapiens",
             "--gene", "DMD",
             "--variant", "chrX:g.31805775-31932165del",
@@ -97,7 +97,7 @@ class TestCLIIntegration:
     def test_variant_analysis_duplication(self, temp_dir):
         """Test variant analysis with duplication."""
         cmd = [
-            "python", "-m", "dystroseq",
+            "python", "-m", "exonseq", "export",
             "--species", "homo_sapiens",
             "--gene", "DMD",
             "--variant", "chrX:g.123456-789012dup",
@@ -123,7 +123,7 @@ class TestCLIIntegration:
     def test_invalid_gene(self, temp_dir):
         """Test handling of invalid gene symbol."""
         cmd = [
-            "python", "-m", "dystroseq",
+            "python", "-m", "exonseq", "export",
             "--species", "homo_sapiens",
             "--gene", "INVALID_GENE",
             "--out", temp_dir
@@ -138,7 +138,7 @@ class TestCLIIntegration:
     def test_invalid_variant_notation(self, temp_dir):
         """Test handling of invalid variant notation."""
         cmd = [
-            "python", "-m", "dystroseq",
+            "python", "-m", "exonseq", "export",
             "--species", "homo_sapiens",
             "--gene", "DMD",
             "--variant", "invalid_variant_notation",
@@ -156,7 +156,7 @@ class TestCLIIntegration:
         new_temp_dir = os.path.join(temp_dir, "new_subdir")
         
         cmd = [
-            "python", "-m", "dystroseq",
+            "python", "-m", "exonseq", "export",
             "--species", "homo_sapiens",
             "--gene", "DMD",
             "--out", new_temp_dir
@@ -172,7 +172,7 @@ class TestCLIIntegration:
     def test_file_contents_validity(self, temp_dir):
         """Test that generated files contain valid content."""
         cmd = [
-            "python", "-m", "dystroseq",
+            "python", "-m", "exonseq", "export",
             "--species", "homo_sapiens",
             "--gene", "DMD",
             "--out", temp_dir
@@ -209,24 +209,24 @@ class TestErrorHandling:
     def test_missing_required_arguments(self):
         """Test that missing required arguments cause appropriate errors."""
         # Missing --gene
-        cmd = ["python", "-m", "dystroseq", "--species", "homo_sapiens"]
+        cmd = ["python", "-m", "exonseq", "export", "--species", "homo_sapiens"]
         result = subprocess.run(cmd, capture_output=True, text=True)
         assert result.returncode != 0
         
         # Missing --species
-        cmd = ["python", "-m", "dystroseq", "--gene", "DMD"]
+        cmd = ["python", "-m", "exonseq", "export", "--gene", "DMD"]
         result = subprocess.run(cmd, capture_output=True, text=True)
         assert result.returncode != 0
         
         # Missing --out
-        cmd = ["python", "-m", "dystroseq", "--species", "homo_sapiens", "--gene", "DMD"]
+        cmd = ["python", "-m", "exonseq", "export", "--species", "homo_sapiens", "--gene", "DMD"]
         result = subprocess.run(cmd, capture_output=True, text=True)
         assert result.returncode != 0
     
     def test_invalid_species(self, temp_dir):
         """Test handling of invalid species."""
         cmd = [
-            "python", "-m", "dystroseq",
+            "python", "-m", "exonseq", "export",
             "--species", "invalid_species",
             "--gene", "DMD",
             "--out", temp_dir
@@ -253,7 +253,7 @@ class TestFilePermissions:
             os.chmod(readonly_dir, 0o444)  # Read-only
             
             cmd = [
-                "python", "-m", "dystroseq",
+                "python", "-m", "exonseq", "export",
                 "--species", "homo_sapiens",
                 "--gene", "DMD",
                 "--out", readonly_dir

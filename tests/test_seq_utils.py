@@ -1,7 +1,7 @@
-"""Unit tests for dystroseq.seq_utils module."""
+"""Unit tests for exonseq.seq_utils module."""
 
 import pytest
-from dystroseq.seq_utils import (
+from exonseq.seq_utils import (
     to_rna, translate_dna_cds, pick_transcript, transcript_exons_in_order,
     build_cdna_exon_ranges, exon_protein_segments, parse_variant_notation,
     get_variant_affected_exons, extract_variant_sequence, create_variant_report,
